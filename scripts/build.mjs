@@ -9,8 +9,29 @@ const check = process.argv.includes("--check"),
   endpoint = "https://mcp.flash-router.co.jp/mcp";
 const files = new Map();
 const put = (p, v) =>
-  files.set(p, typeof v === "string" ? v : JSON.stringify(v, null, 2) + "\n");
+  files.set(
+    p,
+    typeof v === "string" || Buffer.isBuffer(v)
+      ? v
+      : JSON.stringify(v, null, 2) + "\n",
+  );
 const entries = { codex: [], claude: [] };
+const homepage = "https://flash-router.co.jp";
+const repository = "https://github.com/Cognitech-DEV/flashrouter-agent-plugins";
+const icon = readFileSync(path.join(root, "assets/flash-router-icon.png"));
+const tasks = JSON.parse(
+  readFileSync(path.join(root, "evals/admin.json"), "utf8"),
+);
+const reviewCases = Object.fromEntries(
+  Object.entries(tasks).map(([kind, list]) => [
+    kind,
+    list.map(({ description, prompt, tools_triggered, expected_behavior }) => ({
+      description,
+      prompt,
+      ...(kind === "positive" ? { tools_triggered, expected_behavior } : {}),
+    })),
+  ]),
+);
 for (const surface of ["console", "admin"]) {
   const name = "flash-router-" + surface;
   const display =
@@ -26,8 +47,62 @@ for (const surface of ["console", "admin"]) {
   const description =
     surface === "console"
       ? "Read your workspace models, credits and usage."
-      : "Inspect platform state and prepare Model Studio actions with separate human review.";
+      : "Build API models and investigate FlashRouter operations.";
   const author = { name: "Cognitech" };
+  const keywords = [
+    "flashrouter",
+    "mcp",
+    surface,
+    ...(surface === "admin"
+      ? ["model-studio", "sre", "routing"]
+      : ["credits", "usage"]),
+  ];
+  const ui = {
+    displayName: display,
+    shortDescription: description,
+    longDescription:
+      surface === "console"
+        ? "Read your workspace's published model catalog, credit balance and bounded usage through a read-only connection bound to current organization membership."
+        : "Use the native Admin form for private upstream key entry, then import models, configure draft editions and prepare certification/deployment approvals before creating Direct and Policy API model drafts. Inspect model/routing state, alerts and releases, and investigate operational problems. Sensitive changes require owner confirmation. Read selected single-request model/version, attempt, charge and cost evidence through the native audited lookup, preserving unknown amounts and coverage. Request content, credentials and raw provider errors are excluded; general audit-event search is not exposed.",
+    developerName: "Cognitech",
+    category: "Developer Tools",
+    websiteURL: homepage,
+    supportURL: repository + "/issues",
+    defaultPrompt:
+      surface === "console"
+        ? [
+            "Which published models are available in my workspace?",
+            "Show my credit balance.",
+            "Summarize my usage over the last seven days.",
+          ]
+        : [
+            "Help onboard my upstream models and create a disabled Direct or Policy draft.",
+            "Check the publication and routing state of this API model.",
+            "Investigate this request ID using historical model, charge and cost evidence.",
+          ],
+    brandColor: "#2855ce",
+    composerIcon: "./assets/flash-router-icon.png",
+    logo: "./assets/flash-router-icon.png",
+  };
+  const openai = {
+    onboardingSkill: "./skills/flash-router-" + surface + "-setup/SKILL.md",
+    ...(surface === "admin"
+      ? {
+          review: {
+            test_cases: reviewCases,
+            commerce: false,
+            commerce_description:
+              "This plugin does not sell products or process payments.",
+          },
+        }
+      : {}),
+    publication: {
+      release_notes:
+        surface === "admin"
+          ? "Add native model import, draft edition specification editing and human-confirmed certification/deployment approval; retain native key entry and audited request reads."
+          : "Clarify read-only Console setup and workspace model, credit and usage inspection with native OAuth permissions.",
+    },
+  };
   const portable = "plugins/" + name,
     compat = "providers/codex/" + name,
     claude = "providers/claude-code/" + name;
@@ -37,17 +112,14 @@ for (const surface of ["console", "admin"]) {
     version,
     description,
     author,
+    homepage,
+    repository,
+    keywords,
     license: "MIT",
     extensions: {
       "com.openai": {
-        interface: {
-          displayName: display,
-          shortDescription: description,
-          developerName: "Cognitech",
-          category: "Developer Tools",
-          brandColor: "#2855ce",
-        },
-        onboardingSkill: "./skills/flash-router-" + surface + "-setup/SKILL.md",
+        ...openai,
+        interface: ui,
       },
     },
   });
@@ -74,23 +146,27 @@ for (const surface of ["console", "admin"]) {
     version,
     description,
     author,
+    homepage,
+    repository,
+    license: "MIT",
+    keywords,
     skills: "./skills/",
     mcpServers: "./.mcp.json",
-    interface: {
-      displayName: display,
-      shortDescription: description,
-      developerName: "Cognitech",
-      category: "Developer Tools",
-      brandColor: "#2855ce",
-    },
+    interface: ui,
+    extensions: { "com.openai": openai },
   });
   put(claude + "/.claude-plugin/plugin.json", {
     name,
     version,
     description,
     author,
+    homepage,
+    repository,
     license: "MIT",
+    keywords,
   });
+  for (const dir of [portable, compat])
+    put(dir + "/assets/flash-router-icon.png", icon);
   for (const dir of [compat, claude])
     put(dir + "/.mcp.json", {
       mcpServers: { flashrouter: { type: "http", url: endpoint } },
@@ -124,9 +200,9 @@ put(".claude-plugin/marketplace.json", {
 for (const [file, value] of files) {
   const p = path.join(root, file);
   if (check)
-    assert.equal(
-      readFileSync(p, "utf8"),
-      value,
+    assert.deepEqual(
+      readFileSync(p),
+      Buffer.from(value),
       "Generated package drift: " + file,
     );
   else {

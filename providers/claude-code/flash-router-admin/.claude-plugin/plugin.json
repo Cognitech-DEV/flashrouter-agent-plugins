@@ -1,9 +1,19 @@
 {
   "name": "flash-router-admin",
-  "version": "0.3.0",
-  "description": "Inspect platform state and prepare Model Studio actions with separate human review.",
+  "version": "0.3.1",
+  "description": "Build API models and investigate FlashRouter operations.",
   "author": {
     "name": "Cognitech"
   },
-  "license": "MIT"
+  "homepage": "https://flash-router.co.jp",
+  "repository": "https://github.com/Cognitech-DEV/flashrouter-agent-plugins",
+  "license": "MIT",
+  "keywords": [
+    "flashrouter",
+    "mcp",
+    "admin",
+    "model-studio",
+    "sre",
+    "routing"
+  ]
 }

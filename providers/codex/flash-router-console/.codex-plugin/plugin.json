@@ -1,17 +1,45 @@
 {
   "name": "flash-router-console",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Read your workspace models, credits and usage.",
   "author": {
     "name": "Cognitech"
   },
+  "homepage": "https://flash-router.co.jp",
+  "repository": "https://github.com/Cognitech-DEV/flashrouter-agent-plugins",
+  "license": "MIT",
+  "keywords": [
+    "flashrouter",
+    "mcp",
+    "console",
+    "credits",
+    "usage"
+  ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "FlashRouter Console",
     "shortDescription": "Read your workspace models, credits and usage.",
+    "longDescription": "Read your workspace's published model catalog, credit balance and bounded usage through a read-only connection bound to current organization membership.",
     "developerName": "Cognitech",
     "category": "Developer Tools",
-    "brandColor": "#2855ce"
+    "websiteURL": "https://flash-router.co.jp",
+    "supportURL": "https://github.com/Cognitech-DEV/flashrouter-agent-plugins/issues",
+    "defaultPrompt": [
+      "Which published models are available in my workspace?",
+      "Show my credit balance.",
+      "Summarize my usage over the last seven days."
+    ],
+    "brandColor": "#2855ce",
+    "composerIcon": "./assets/flash-router-icon.png",
+    "logo": "./assets/flash-router-icon.png"
+  },
+  "extensions": {
+    "com.openai": {
+      "onboardingSkill": "./skills/flash-router-console-setup/SKILL.md",
+      "publication": {
+        "release_notes": "Clarify read-only Console setup and workspace model, credit and usage inspection with native OAuth permissions."
+      }
+    }
   }
 }

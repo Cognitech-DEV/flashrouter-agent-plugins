@@ -8,13 +8,13 @@
       "name": "flash-router-console",
       "source": "./providers/claude-code/flash-router-console",
       "description": "Read your workspace models, credits and usage.",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     {
       "name": "flash-router-admin",
       "source": "./providers/claude-code/flash-router-admin",
-      "description": "Inspect platform state and prepare Model Studio actions with separate human review.",
-      "version": "0.3.0"
+      "description": "Build API models and investigate FlashRouter operations.",
+      "version": "0.3.1"
     }
   ]
 }
