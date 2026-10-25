@@ -1,0 +1,9 @@
+{
+  "name": "flash-router-console",
+  "version": "0.3.0",
+  "description": "Read your workspace models, credits and usage.",
+  "author": {
+    "name": "Cognitech"
+  },
+  "license": "MIT"
+}

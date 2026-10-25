@@ -1,0 +1,23 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "flashrouter": {
+      "type": "streamable-http",
+      "url": "https://mcp.flash-router.co.jp/mcp",
+      "extensions": {
+        "com.openai": {
+          "auth": {
+            "type": "oauth",
+            "client": {
+              "mode": "dcr"
+            },
+            "defaultScopes": [
+              "flashrouter:admin",
+              "offline_access"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

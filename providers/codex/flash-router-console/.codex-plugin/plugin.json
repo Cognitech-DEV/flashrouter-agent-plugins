@@ -1,0 +1,17 @@
+{
+  "name": "flash-router-console",
+  "version": "0.3.0",
+  "description": "Read your workspace models, credits and usage.",
+  "author": {
+    "name": "Cognitech"
+  },
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "FlashRouter Console",
+    "shortDescription": "Read your workspace models, credits and usage.",
+    "developerName": "Cognitech",
+    "category": "Developer Tools",
+    "brandColor": "#2855ce"
+  }
+}

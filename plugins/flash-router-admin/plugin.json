@@ -1,0 +1,22 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "flash-router-admin",
+  "version": "0.3.0",
+  "description": "Inspect platform state and prepare Model Studio actions with separate human review.",
+  "author": {
+    "name": "Cognitech"
+  },
+  "license": "MIT",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "FlashRouter Admin",
+        "shortDescription": "Inspect platform state and prepare Model Studio actions with separate human review.",
+        "developerName": "Cognitech",
+        "category": "Developer Tools",
+        "brandColor": "#2855ce"
+      },
+      "onboardingSkill": "./skills/flash-router-admin-setup/SKILL.md"
+    }
+  }
+}

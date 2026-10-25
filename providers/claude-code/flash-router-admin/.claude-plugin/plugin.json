@@ -1,0 +1,9 @@
+{
+  "name": "flash-router-admin",
+  "version": "0.3.0",
+  "description": "Inspect platform state and prepare Model Studio actions with separate human review.",
+  "author": {
+    "name": "Cognitech"
+  },
+  "license": "MIT"
+}
