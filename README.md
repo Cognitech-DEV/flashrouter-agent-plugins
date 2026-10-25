@@ -45,10 +45,25 @@ Open `/mcp` to connect and authorize the plugin.
 
 ### Connect your account
 
-Use your client's **Connect** or sign-in action. FlashRouter opens in the
-browser for native sign-in and permission review. Review the workspace or model
-scope, requested operations and expiry, then authorize the connection. You do
-not need to enter a server address or copy a token.
+Start a plugin task. Its profile request lets a supported client present its
+native **Authorize / Connect** card when login is missing or expired. Click it,
+then sign in and review permissions in the native FlashRouter page. You can
+also use the client's Connect action. No server address, token or API key needs
+to be entered in chat.
+
+If a Viewer connection cannot do requested model work, the agent can request
+native reauthorization with `fr_admin_authorize`, passing the nonsecret current
+connection ID. You select the permitted operations, resources, role cap and
+expiry yourself. Draft creation requires Operator; edition certification needs
+Admin. The agent checks the new profile and available operations before
+continuing. A new login does not itself increase permissions, and OAuth consent
+does not replace sensitive-action confirmations.
+
+This requires the matching hosted MCP release and client support. The server
+supplies OAuth declarations and challenges; the client renders the card. The
+exact in-chat card in Codex desktop has not yet been accepted in a recorded
+host run. For a registered OpenAI App, reuse its existing ID and follow the
+[native authorization test guide](docs/openai-authorization.md).
 
 Both plugins use `https://mcp.flash-router.co.jp/mcp`. If Codex needs a named
 connection to start OAuth, use the [compatibility helper](#troubleshooting).
@@ -148,6 +163,11 @@ skill files; see [Security](SECURITY.md) for reporting guidance.
 
 If newly installed tools are missing, refresh or restart your client. If your
 authorization expires or your membership changes, connect and authorize again.
+An existing MCP connection named `flashrouter` can be reused; it does not by
+itself establish a registered OpenAI App mapping. If the native card is missing,
+check the [App association and host checklist](docs/openai-authorization.md)
+before creating another connection. Do not send credentials to work around a
+missing card.
 
 <details>
 <summary>Codex CLI: start OAuth with the compatibility helper</summary>

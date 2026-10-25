@@ -5,7 +5,7 @@ description: Inspect FlashRouter model and routing state, alerts and releases; i
 
 ## Establish scope
 
-Start with `fr_admin_profile`; verify environment, role and resource scope. Prefer read-only authority for investigation. Use `fr_admin_api_search`, `fr_admin_api_details` and `fr_admin_api_read` for released operations. A model-scoped grant cannot enumerate platform resources. Missing access is not permission to switch credentials or principals.
+Start with `fr_admin_profile`; verify environment, role and resource scope. Prefer read-only authority for investigation. Use `fr_admin_api_search`, `fr_admin_api_details` and `fr_admin_api_read` for released operations. A model-scoped grant cannot enumerate platform resources. Missing access is not permission to switch credentials or principals. Let the native authorization card handle missing/expired login. If the owner requests a read outside the current grant, use `fr_admin_authorize` once when available with only the current profile's nonsecret `connectionId`, wait for native consent, then read profile and discover again. Keep the requested investigation read-only; do not ask for model-write authority or loop if the owner cancels or access remains insufficient.
 
 ## System checks
 

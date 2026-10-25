@@ -1,6 +1,6 @@
 {
   "name": "flash-router-admin",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Build API models and investigate FlashRouter operations.",
   "author": {
     "name": "Cognitech"

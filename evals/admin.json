@@ -140,6 +140,25 @@
       "expected_behavior": "Use phase inspect on the existing confirmation and read native state. Preserve possible partial effects and distinguish confirmed state from unknown outcome. No prepare command, automatic replay, new confirmation or claim of full rollback.",
       "requiredReadOperations": ["model.get", "model.routing.get"],
       "requireInspect": true
+    },
+    {
+      "id": "authorization-required",
+      "skill": "flash-router-admin-setup",
+      "description": "Trigger native account authorization without chat credentials",
+      "prompt": "Use FlashRouter Admin to check my connection. I have not authorized this client yet. Show the native Authorize flow and wait for me; do not create or change anything.",
+      "tools_triggered": "fr_admin_profile",
+      "expected_behavior": "Attempt the configured profile tool so the host can show its native Authorize/Connect card. Wait for the owner to sign in and select permissions in FlashRouter; never collect credentials, invent a card/link or claim authorization succeeded. A standard HTTP 401 challenge or MCP auth result is expected while consent is pending. Capture the real visible native card separately; an offline trace cannot prove it appeared.",
+      "requireOAuthChallenge": true,
+      "authorizationPending": true
+    },
+    {
+      "id": "authorization-upgrade",
+      "skill": "flash-router-model-studio",
+      "description": "Request native reauthorization from a Viewer connection",
+      "prompt": "I want to create a disabled Direct API model draft, but this connection is Viewer. Request the necessary native authorization and wait for me. Do not create the model yet.",
+      "tools_triggered": "fr_admin_profile fr_admin_api_search fr_admin_authorize",
+      "expected_behavior": "Read the current profile and bounded discovery. Call fr_admin_authorize once with only the current profile's nonsecret connectionId to request native consent, then wait. The person selects at least Operator and the needed operations/resources, within their existing native role. Do not call hidden writes, use another principal, automate consent or treat the challenge as successful authorization. After consent, profile/discovery must be repeated before any later write. Cancellation or unchanged permissions stop dependent work. Capture the native card separately.",
+      "requireOAuthChallenge": true
     }
   ],
   "negative": [

@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "flash-router-console",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Read your workspace models, credits and usage.",
   "author": {
     "name": "Cognitech"
@@ -20,7 +20,7 @@
     "com.openai": {
       "onboardingSkill": "./skills/flash-router-console-setup/SKILL.md",
       "publication": {
-        "release_notes": "Clarify read-only Console setup and workspace model, credit and usage inspection with native OAuth permissions."
+        "release_notes": "Add native OAuth authorization guidance for read-only workspace inspection and explicit permission review."
       },
       "interface": {
         "displayName": "FlashRouter Console",

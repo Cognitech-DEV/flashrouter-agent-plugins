@@ -1,6 +1,6 @@
 # Admin/SRE task evaluations
 
-[`admin.json`](admin.json) is the source for ten task cases and three
+[`admin.json`](admin.json) is the source for twelve task cases and three
 non-trigger cases. The generator embeds the same review prompts and expected
 outcomes in the Admin portable and Codex manifests. This follows Stripe's
 [plugin review cases](https://github.com/stripe/ai/blob/main/providers/agent-plugins/plugin/plugin.json)
@@ -51,6 +51,24 @@ approach, using the existing FlashRouter client and native operations.
 
 List prompts with `npm run eval -- --list`.
 
+## Native authorization cards
+
+`authorization-required` starts without authorization and waits after the
+profile request's native OAuth challenge. `authorization-upgrade` starts with
+Viewer, reads profile/discovery, then requests consent once using
+`fr_admin_authorize` and only the current profile's `connectionId`. Neither case
+permits a business write. Also test cancellation, an unchanged Viewer choice,
+expired tokens, and a new grant returned after consent; a client retry of the
+authorization request must finish without another challenge. Re-read profile
+and discovery before dependent work. Test unavailable auth services separately:
+a service failure must not be reported as a sign-in requirement.
+
+Record the client's visible **Authorize** card and its return to the same chat
+as host evidence. Then verify the actual granted role/operations and native
+audit; do not capture credentials or automate human consent. A challenge in a
+trace does not prove a card appeared. Registered-App wiring and the host
+acceptance checklist are in [the authorization guide](../docs/openai-authorization.md).
+
 ## Check a captured trace
 
 Normalize the client's tool names to their bare `fr_admin_*` names and preserve
@@ -75,7 +93,11 @@ call order, arguments and results. Save a JSON object with a `calls` array:
 
 The abbreviated example is the expected discovery boundary for an ungranted
 `request-audit-gap` run; it is synthetic, not a recorded host pass. Results can
-also use the MCP `content`/`isError` envelope.
+also use the MCP `content`/`isError` envelope. Preserve `_meta` on OAuth errors.
+An HTTP authentication challenge can be normalized as
+`{ "status": 401, "headers": { "www-authenticate": "Bearer …" } }` without
+request headers or tokens. Authorization cases check the challenge's canonical
+metadata URL and error code; ordinary text asking to authorize does not pass.
 
 ```sh
 npm run eval -- request-audit-gap /tmp/request.trace.json

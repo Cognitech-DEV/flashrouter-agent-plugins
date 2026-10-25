@@ -7,6 +7,8 @@ description: Create and configure FlashRouter Direct or Policy API models, inspe
 
 Start with `fr_admin_profile`: verify the environment, current role, operation ceiling and model scope. Discover the operation with `fr_admin_api_search`, then read `fr_admin_api_details` for its inputs and confirmation policy. Use the native contracts returned by details; cached operation names grant no authority.
 
+Let the client's native authorization card handle an unauthenticated profile request. If the requested model work exceeds the current grant, use `fr_admin_authorize` once when available with only the current profile's nonsecret `connectionId`, then wait for the human's native consent. Draft creation/import/edition edits/deployment approval require Operator or higher; edition certification requires Admin. Re-read profile and rediscover after consent before any dependent command. A renewed login alone does not prove permission increased. Stop if authority is still insufficient or consent is cancelled; do not loop or replay an uncertain write. OAuth consent does not replace exact-action confirmations.
+
 ## Upstream setup through native Admin
 
 For a new upstream or credential change, use `nativeAdmin.upstreamsUrl` from the profile as a link for the human operator. Collect only nonsecret inputs: display name, protocol, API base URL and intended model IDs. The operator opens Admin in their own browser and enters the API key in its existing secret field. Never request a key in chat, put it in MCP parameters/results, URLs or logs, or inspect, screenshot, type into or submit the credential form with browser automation. Native Admin authentication, role checks and credential staging remain in charge.

@@ -99,8 +99,8 @@ for (const surface of ["console", "admin"]) {
     publication: {
       release_notes:
         surface === "admin"
-          ? "Add native model import, draft edition specification editing and human-confirmed certification/deployment approval; retain native key entry and audited request reads."
-          : "Clarify read-only Console setup and workspace model, credit and usage inspection with native OAuth permissions.",
+          ? "Add native OAuth authorization and permission-review guidance; retain native key entry, read-only grant boundaries and separate sensitive-action confirmations."
+          : "Add native OAuth authorization guidance for read-only workspace inspection and explicit permission review.",
     },
   };
   const portable = "plugins/" + name,

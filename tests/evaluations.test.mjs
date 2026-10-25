@@ -10,9 +10,36 @@ const call = (suffix, args = {}, result = {}) => ({
   arguments: args,
   result,
 });
+const authChallenge = {
+  isError: true,
+  content: [{ type: "text", text: "Authorization required" }],
+  _meta: {
+    "mcp/www_authenticate": [
+      'Bearer resource_metadata="https://mcp.flash-router.co.jp/.well-known/oauth-protected-resource/mcp", error="insufficient_scope", error_description="Review permissions"',
+    ],
+  },
+};
 function traceFor(id) {
   const t = task(id);
   if (!t.tools_triggered) return { calls: [] };
+  if (t.authorizationPending)
+    return { calls: [call("profile", {}, structuredClone(authChallenge))] };
+  if (t.id === "authorization-upgrade")
+    return {
+      calls: [
+        call(
+          "profile",
+          {},
+          { role: "viewer", connectionId: "synthetic-viewer-connection" },
+        ),
+        call("api_search", { query: "model" }, { operations: [] }),
+        call(
+          "authorize",
+          { connectionId: "synthetic-viewer-connection" },
+          structuredClone(authChallenge),
+        ),
+      ],
+    };
   const ops = [
     ...new Set([
       ...(t.requiredWriteOperations ?? []),
@@ -333,5 +360,66 @@ test("an immediate result cannot stand in for human-confirmed onboarding", () =>
     gradeTrace(task("model-onboarding"), trace).failures.some((f) =>
       f.startsWith("Missing owner confirmation preparation:"),
     ),
+  );
+});
+
+test("authorization cases require a real challenge and forbid writes, argument-based elevation and loops", () => {
+  const baseline = traceFor("authorization-upgrade");
+  for (const result of [
+    {},
+    { isError: true, content: [{ type: "text", text: "Please authorize" }] },
+    {
+      ...authChallenge,
+      _meta: {
+        "mcp/www_authenticate": [
+          'Bearer resource_metadata="https://attacker.invalid", error="insufficient_scope"',
+        ],
+      },
+    },
+  ]) {
+    const trace = structuredClone(baseline);
+    trace.calls.at(-1).result = result;
+    assert.equal(
+      gradeTrace(task("authorization-upgrade"), trace).tracePassed,
+      false,
+    );
+  }
+  for (const extra of [
+    call("authorize", {}, authChallenge),
+    call("api_write", { phase: "prepare", operationKey: "model.create" }),
+  ]) {
+    const trace = structuredClone(baseline);
+    trace.calls.push(extra);
+    assert.equal(
+      gradeTrace(task("authorization-upgrade"), trace).tracePassed,
+      false,
+    );
+  }
+  const args = structuredClone(baseline);
+  args.calls.at(-1).arguments = {
+    connectionId: "synthetic-viewer-connection",
+    role: "admin",
+  };
+  assert.equal(
+    gradeTrace(task("authorization-upgrade"), args).tracePassed,
+    false,
+  );
+  const http = {
+    calls: [
+      call(
+        "profile",
+        {},
+        {
+          status: 401,
+          headers: {
+            "www-authenticate": authChallenge._meta["mcp/www_authenticate"][0],
+          },
+        },
+      ),
+    ],
+  };
+  assert.equal(
+    gradeTrace(task("authorization-required"), http).tracePassed,
+    true,
   );
 });
