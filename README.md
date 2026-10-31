@@ -213,3 +213,16 @@ This repository contains client-side instructions and connection manifests. The
 hosted MCP server and business backend are operated separately.
 
 MIT licensed. See [LICENSE](LICENSE).
+
+## Money units and execution reviews
+
+Current customer prices and accounting use JPY. Console balances and Usage use
+integer micro-JPY strings; management model price displays use JPY per million
+tokens. Admin evidence retains explicit currency because provider cost remains
+USD. Never infer a conversion or treat unknown cost as zero.
+
+Execution review reminders default to seven lead days, but require enabled
+native settings and a configured receiver. MCP may prepare a permitted review
+update for the owner's confirmation; it does not autonomously renew certificates
+or bypass a read-only grant. The advisory review date is separate from OAuth
+connection expiry.
